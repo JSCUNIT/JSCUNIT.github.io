@@ -1,142 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>About - JSCUNIT</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#0a0a0a;--text:#fff;--muted:#9a9a9a;--border:rgba(255,255,255,0.08)}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
-  header{border-bottom:1px solid var(--border);padding:18px 20px;text-align:center}
-  .banner{font-family:'Orbitron',sans-serif;letter-spacing:3px;font-size:32px}
-  .banner a{color:var(--text);text-decoration:none}
-  nav{margin-top:10px;text-align:center}
-  nav a{color:var(--text);text-decoration:none;margin:0 14px;font-weight:600;opacity:0.85}
-  nav a:hover{opacity:1}
-  main{max-width:1000px;margin:60px auto;padding:0 20px;line-height:1.7}
-  h1{font-family:'Orbitron',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:18px}
-  .lead{color:var(--muted);margin-bottom:18px}
-  .weapons{display:flex;gap:18px;flex-wrap:wrap;margin:22px 0}
-  .weapon{width:30%;min-width:180px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
-  .weapon img{width:100%;height:140px;object-fit:cover;border-radius:6px}
-  .team{display:flex;gap:18px;flex-wrap:wrap;margin-top:28px}
-  .member{width:240px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.005));padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);position:relative;cursor:pointer}
-  .member .name{font-weight:700;margin-bottom:6px}
-  .member .role{font-size:13px;color:var(--muted);margin-bottom:6px}
-  .member .meta{font-size:13px;color:var(--muted)}
-  .detail{position:absolute;left:calc(100% + 12px);top:0;width:320px;background:#070707;border:1px solid var(--border);padding:12px;border-radius:8px;display:none;z-index:30}
-  .member.active .detail{display:block}
-  .weapon-small{width:100%;height:120px;object-fit:cover;border-radius:6px;margin-top:10px}
-  @media (max-width:720px){
-    .detail{position:fixed;left:12px;right:12px;top:20%;width:auto}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About - JSC UNIT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>body{background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;margin:0;padding:60px;line-height:1.7}</style>
 </head>
 <body>
-  <header>
-    <div class="banner"><a href="index.html">JSCUNIT</a></div>
-    <nav>
-      <a href="index.html">HOME</a>
-      <a href="about.html">ABOUT</a>
-      <a href="mission.html">MISSION</a>
-      <a href="operations.html">OPERATIONS</a>
-      <a href="contact.html">CONTACT</a>
-    </nav>
-  </header>
-
-  <main>
-    <h1>ABOUT THE UNIT</h1>
-    <p class="lead">JSC Unit is a specialist team focused on high-risk rescue and counter-terror operations We combine tactics technology and decisive action to save lives and neutralize threats</p>
-
-    <h2>Primary Roles</h2>
-    <p>We specialize in search and rescue counter-terrorism and hostage rescue missions Our unit is trained for rapid insertion precision breaching and coordinated extraction under duress</p>
-
-    <h2>Standard Issue Weapons</h2>
-    <div class="weapons">
-      <div class="weapon">
-        <strong>AK-47</strong>
-        <!-- AK-47 public image (Wikimedia Commons example) -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/AK-47_type_II_Part_DM-ST-89-01131.jpg" alt="AK-47" />
-        <p style="color:var(--muted);margin-top:8px">Reliable and rugged battle rifle used by lead operators for robust performance in diverse environments</p>
-      </div>
-
-      <div class="weapon">
-        <strong>URG-I</strong>
-        <!-- URG-I example image (public image used as placeholder) -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/FAMAE_URG-I.jpg" alt="URG-I" />
-        <p style="color:var(--muted);margin-top:8px">Compact carbine favored for close-quarters and rapid engagements</p>
-      </div>
-
-      <div class="weapon">
-        <strong>M4A1 SOPMOD II</strong>
-        <!-- M4 family public image example -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/M4_Carbine_Original.jpg" alt="M4A1 SOPMOD" />
-        <p style="color:var(--muted);margin-top:8px">Modular rifle with SOPMOD upgrades optimized for modern special operations</p>
-      </div>
-    </div>
-
-    <h2>Team Members</h2>
-    <div class="team">
-      <!-- JINOO -->
-      <div class="member" tabindex="0">
-        <div class="name">JINOO</div>
-        <div class="role">Team Leader </div>
-        <div class="meta">Age 33</div>
-
-        <div class="detail">
-          <strong>JINOO — Team Leader</strong>
-          <p style="margin-top:8px;color:var(--muted)">Leads strategic planning and command decisions Oversees mission planning risk assessment and end-state accountability Known for calm leadership in high-pressure rescue and assault scenarios</p>
-          <p style="margin-top:10px"><strong>Primary Weapon</strong>: AK-47</p>
-          <img class="weapon-small" src="https://upload.wikimedia.org/wikipedia/commons/6/6b/AK-47_type_II_Part_DM-ST-89-01131.jpg" alt="AK-47 small" />
-        </div>
-      </div>
-
-      <!-- CHRIS -->
-      <div class="member" tabindex="0">
-        <div class="name">CHRIS</div>
-        <div class="role">Operations Leader </div>
-        <div class="meta">Age 22</div>
-
-        <div class="detail">
-          <strong>CHRIS — Operations Chief</strong>
-          <p style="margin-top:8px;color:var(--muted)">Coordinates mission logistics and tactical sequencing Responsible for intel integration and real-time adjustments Rapid problem solver and communications lead during execution</p>
-          <p style="margin-top:10px"><strong>Primary Weapon</strong>: URG-I</p>
-          <img class="weapon-small" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/FAMAE_URG-I.jpg" alt="URG-I small" />
-        </div>
-      </div>
-
-      <!-- SION -->
-      <div class="member" tabindex="0">
-        <div class="name">SION</div>
-        <div class="role">Assault Leader </div>
-        <div class="meta">Age 23</div>
-
-        <div class="detail">
-          <strong>SION — Assault Lead</strong>
-          <p style="margin-top:8px;color:var(--muted)">Leads entry teams and breaching operations Expert in close-quarters tactics and dynamic entry Prioritizes speed precision and safe extraction of hostages</p>
-          <p style="margin-top:10px"><strong>Primary Weapon</strong>: M4A1 SOPMOD II</p>
-          <img class="weapon-small" src="https://upload.wikimedia.org/wikipedia/commons/2/2e/M4_Carbine_Original.jpg" alt="M4A1 small" />
-        </div>
-      </div>
-    </div>
-  </main>
-
-<script>
-  // Hover for desktop, click/touch for mobile
-  document.querySelectorAll('.member').forEach(el=>{
-    el.addEventListener('mouseenter', ()=>{ el.classList.add('active') })
-    el.addEventListener('mouseleave', ()=>{ el.classList.remove('active') })
-    el.addEventListener('click', (e)=>{
-      e.stopPropagation()
-      document.querySelectorAll('.member').forEach(m=>{ if(m!==el) m.classList.remove('active') })
-      el.classList.toggle('active')
-    })
-    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); el.classList.toggle('active') } })
-  })
-  document.addEventListener('click', ()=>{ document.querySelectorAll('.member').forEach(m=>m.classList.remove('active')) })
-</script>
+  <h2>About the Unit</h2>
+  <p>JSC UNIT specializes in high-risk missions including hostage rescue, counter-terrorism, and covert infiltration operations.</p>
+  <p>Our members undergo rigorous training for tactical precision, adaptability, and silent coordination under pressure.</p>
+  <p>We are a global response team, ready to deploy anywhere, anytime.</p>
 </body>
 </html>
-
