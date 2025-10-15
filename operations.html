@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Operations - JSCUNIT</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0a;--text:#fff;--muted:#9a9a9a;--border:rgba(255,255,255,0.08)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+  header{border-bottom:1px solid var(--border);padding:18px 20px;text-align:center}
+  .banner{font-family:'Orbitron',sans-serif;letter-spacing:3px;font-size:32px}
+  .banner a{color:var(--text);text-decoration:none}
+  nav{margin-top:10px;text-align:center}
+  nav a{color:var(--text);text-decoration:none;margin:0 14px;font-weight:600;opacity:0.85}
+  nav a:hover{opacity:1}
+  main{max-width:1000px;margin:60px auto;padding:0 20px;line-height:1.7}
+  h1{font-family:'Orbitron',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:16px}
+  .ops-grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .card{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  .media img{width:100%;height:180px;object-fit:cover;border-radius:6px}
+  .weapon-list img{width:100%;height:120px;object-fit:cover;border-radius:6px;margin-top:10px}
+  @media (max-width:900px){ .ops-grid{grid-template-columns:1fr} .media img{height:160px} }
+</style>
+</head>
+<body>
+  <header>
+    <div class="banner"><a href="jscunit.html">JSCUNIT</a></div>
+    <nav>
+      <a href="jscunit.html">HOME</a>
+      <a href="about.html">ABOUT</a>
+      <a href="mission.html">MISSION</a>
+      <a href="operations.html">OPERATIONS</a>
+      <a href="contact.html">CONTACT</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>OPERATIONS & CAPABILITIES</h1>
+    <div class="ops-grid">
+      <div class="card">
+        <h2>Modular Task Forces</h2>
+        <p style="color:var(--muted)">Teams are structured into modular squads that can combine for larger operations or split for simultaneous objectives This allows concurrent search rescue and containment tasks</p>
+
+        <h2 style="margin-top:18px">Technical Capabilities</h2>
+        <p style="color:var(--muted)">Advanced breaching, night-vision coordination, encrypted comms and fast-rope insertion capabilities All operators are cross-trained in medical trauma care and close-quarters tactics</p>
+      </div>
+
+      <aside class="card media">
+        <h3>Standard Equipment</h3>
+
+        <div class="weapon-list">
+          <strong>AK-47 — (JINOO)</strong>
+          <img src="이미지/JINOO.jpg" alt="AK-47" />
+
+          <strong style="display:block;margin-top:10px">URG-I — (CHRIS)</strong>
+          <img src="이미지/CHRIS.jpg" alt="URG-I" />
+
+          <strong style="display:block;margin-top:10px">M4A1 SOPMOD II — (SION)</strong>
+          <img src="이미지/SION.jpg" alt="M4A1 SOPMOD" />
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
