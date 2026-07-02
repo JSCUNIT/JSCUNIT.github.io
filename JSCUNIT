@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSC UNIT — Special Operations</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap');
+
+:root{
+  --bg:#0B0D09;
+  --bg-panel:#14170F;
+  --line:#2B301F;
+  --line-soft:#22261A;
+  --accent:#9CB380;
+  --accent-dim:#5F7050;
+  --amber:#C9A227;
+  --danger:#B0392C;
+  --text:#E7E7DD;
+  --text-muted:#9A9C8E;
+  --text-dim:#6B6E5F;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Barlow', sans-serif;
+  font-size:15.5px;
+  line-height:1.65;
+  position:relative;
+  min-height:100vh;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+}
+
+a{ color:inherit; text-decoration:none; cursor:pointer; }
+
+h1,h2,h3,h4{
+  font-family:'Oswald', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+  font-weight:600;
+  color:var(--text);
+}
+
+.mono-tag{
+  font-family:'Barlow Condensed', sans-serif;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  font-size:11.5px;
+  color:var(--accent);
+}
+
+.classbar{
+  background:var(--danger);
+  color:#F4E9E7;
+  font-family:'Barlow Condensed', sans-serif;
+  letter-spacing:0.14em;
+  font-size:11px;
+  text-align:center;
+  padding:5px 8px;
+  text-transform:uppercase;
+  position:relative;
+  z-index:2;
+}
+
+header{
+  background:var(--bg-panel);
+  border-bottom:1px solid var(--line);
+  position:relative;
+  z-index:5;
+}
+.header-inner{
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 24px 16px;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-mark{
+  width:38px; height:38px;
+  border:1.5px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(45deg);
+  flex-shrink:0;
+}
+.brand-mark span{
+  transform:rotate(-45deg);
+  font-family:'Oswald', sans-serif;
+  font-weight:700;
+  font-size:14px;
+  color:var(--accent);
+}
+.brand-text h1{ font-size:22px; letter-spacing:0.08em; line-height:1; }
+.brand-text .sub{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:11px;
+  letter-spacing:0.2em;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  margin-top:3px;
+}
+
+.auth-area{ display:flex; align-items:center; gap:10px; }
+.auth-btn{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:12.5px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  border:1px solid var(--line);
+  color:var(--text-muted);
+  background:none;
+  padding:8px 14px;
+  cursor:pointer;
+}
+.auth-btn:hover{ border-color:var(--accent); color:var(--accent); }
+.auth-chip{
+  display:flex; align-items:center; gap:8px;
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:12.5px;
+  letter-spacing:0.08em;
+  color:var(--amber);
+  border:1px solid var(--amber);
+  padding:6px 12px;
+}
+.auth-chip .dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--amber);
+  flex-shrink:0;
+}
+
+nav.mainnav{ border-top:1px solid var(--line-soft); }
+.nav-inner{
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  padding:0 24px;
+  overflow-x:auto;
+}
+.nav-inner a{
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:13.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  padding:13px 18px 12px;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+}
+.nav-inner a:hover{ color:var(--text); }
+.nav-inner a.active{ color:var(--accent); border-bottom:2px solid var(--accent); }
+
+main{ position:relative; z-index:2; }
+.page{ display:none; }
+.page.active{ display:block; }
+
+.hero{ max-width:1100px; margin:0 auto; padding:70px 24px 50px; }
+.hero.compact{ padding-bottom:20px; }
+.hero .mono-tag{ display:block; margin-bottom:14px; }
+.hero h2{ font-size:clamp(30px, 5vw, 50px); line-height:1.12; max-width:820px; }
+.hero h2 em{ font-style:normal; color:var(--accent); }
+.hero p.lead{ margin-top:20px; max-width:600px; color:var(--text-muted); font-size:16px; }
+
+.hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 22px;
+  font-family:'Barlow Condensed', sans-serif;
+  font-size:14px; letter-spacing:0.1em; text-transform:uppercase;
+  border:1px solid var(--accent); color:var(--accent);
+  clip-path:polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition:background .15s, color .15s;
+  background:none; cursor:pointer;
+}
+.btn:hover{ background:var(--accent); color:#0B0D09; }
+.btn.solid{ background:var(--accent); color:#0B0D09; }
+.btn.solid:hover{ background:var(--text); border-color:var(--text); }
+
+.section{ max-width:1100px; margin:0 auto; padding:10px 24px 60px; }
+.section.narrow{ max-width:640px; }
+.section-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:28px;
+}
+.section-head h3{ font-size:24px; }
+
+.grid{ display:grid; gap:18px; }
+.grid.cols-3{ grid-template-columns:repeat(3, 1fr); }
+.grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+
+.hud-panel{
+  background:var(--bg-panel); border:1px solid var(--line);
+  padding:22px 22px 20px; position:relative;
+}
+.hud-panel::before, .hud-panel::after{
+  content:""; position:absolute; width:14px; height:14px;
+  border-color:var(--accent); border-style:solid; opacity:0.85;
+}
+.hud-panel::before{ top:-1px; left:-1px; border-width:1.5px 0 0 1.5px; }
+.hud-panel::after{ bottom:-1px; right:-1px; border-width:0 1.5px 1.5px 0; }
+.hud-panel h4{ font-size:16px; margin-bottom:10px; color:var(--text); }
+.hud-panel p{ color:var(--text-muted); font-size:14.5px; }
+.hud-panel .idx{
+  font-family:'Barlow Condensed', sans-serif; font-size:12px;
+  color:var(--accent-dim); letter-spacing:0.14em; margin-bottom:8px; display:block;
+}
+.hud-panel ul.spec-list{ list-style:none; margin-top:10px; }
+.hud-panel ul.spec-list li{
+  font-size:13.5px; color:var(--text-muted);
+  padding:5px 0 5px 14px; position:relative;
+}
+.hud-panel ul.spec-list li::before{
+  content:"—"; position:absolute; left:0; color:var(--accent-dim);
+}
+
+/* photo slot for weapon images the user will add */
+.photo-slot{
+  width:100%; height:140px; margin-bottom:14px;
+  border:1px dashed var(--line);
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.photo-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+.photo-fallback{
+  display:none; flex-direction:column; align-items:center; gap:6px;
+  color:var(--text-dim); font-size:12px; text-align:center; padding:10px;
+}
+.photo-fallback code{
+  color:var(--accent-dim); font-size:11px;
+  font-family:'Barlow Condensed', sans-serif;
+}
+
+.roster-card{ background:var(--bg-panel); border:1px solid var(--line); padding:20px; position:relative; cursor:pointer; transition:border-color .15s; }
+.roster-card:hover{ border-color:var(--accent-dim); }
+.roster-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.roster-avatar{
+  width:52px; height:52px; border:1.5px solid var(--accent-dim);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:18px;
+  color:var(--accent); flex-shrink:0;
+}
+.roster-tag{
+  font-family:'Barlow Condensed', sans-serif; font-size:10.5px;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--amber);
+  border:1px solid var(--amber); padding:3px 8px;
+}
+.roster-card h4{ font-size:17px; margin-top:2px; }
+.roster-role{
+  font-family:'Barlow Condensed', sans-serif; font-size:12.5px;
+  letter-spacing:0.08em; color:var(--text-dim); text-transform:uppercase; margin-bottom:12px;
+}
+.roster-card p{ color:var(--text-muted); font-size:14px; margin-bottom:12px; }
+.roster-weap{
+  border-top:1px dashed var(--line); padding-top:10px;
+  font-family:'Barlow Condensed', sans-serif; font-size:12.5px;
+  letter-spacing:0.06em; color:var(--text-dim); text-transform:uppercase;
+  display:flex; justify-content:space-between;
+}
+.roster-weap span:last-child{ color:var(--accent); }
+.roster-more{
+  margin-top:10px; font-family:'Barlow Condensed', sans-serif;
+  font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent);
+}
+
+.roe-list{ list-style:none; }
+.roe-list li{ display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--line-soft); }
+.roe-list li:last-child{ border-bottom:none; }
+.roe-num{
+  font-family:'Oswald', sans-serif; font-size:13px; color:var(--accent);
+  border:1px solid var(--accent-dim); width:26px; height:26px;
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+}
+.roe-list p{ color:var(--text-muted); font-size:14.5px; }
+.roe-list strong{ color:var(--text); font-weight:600; }
+
+.contact-field label{
+  display:block; font-family:'Barlow Condensed', sans-serif; font-size:12px;
+  letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:7px;
+}
+.contact-field input, .contact-field textarea{
+  width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+  padding:11px 12px; font-family:'Barlow', sans-serif; font-size:14px; outline:none;
+}
+.contact-field input:focus, .contact-field textarea:focus{ border-color:var(--accent); }
+.contact-field{ margin-bottom:16px; }
+.contact-note{ font-size:13px; color:var(--text-dim); margin-top:6px; min-height:16px; }
+
+/* board */
+.board-post{
+  border:1px solid var(--line); background:var(--bg-panel);
+  padding:16px 18px; margin-bottom:12px;
+}
+.board-post-top{
+  display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; gap:10px;
+}
+.board-post-top h4{ font-size:15px; }
+.board-post-meta{
+  font-family:'Barlow Condensed', sans-serif; font-size:11.5px;
+  color:var(--text-dim); letter-spacing:0.06em; white-space:nowrap;
+}
+.board-post p{ color:var(--text-muted); font-size:14px; }
+.board-post .del-btn{
+  margin-top:10px; font-family:'Barlow Condensed', sans-serif; font-size:11.5px;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--danger);
+  background:none; border:1px solid var(--danger); padding:4px 10px; cursor:pointer;
+}
+
+footer{ border-top:1px solid var(--line); background:var(--bg-panel); position:relative; z-index:2; }
+.footer-inner{
+  max-width:1100px; margin:0 auto; padding:26px 24px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+}
+.footer-inner .mono-tag{ color:var(--text-dim); }
+
+@media (max-width:760px){
+  .grid.cols-3, .grid.cols-2{ grid-template-columns:1fr; }
+  .header-inner{ flex-wrap:wrap; gap:14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="classbar">Unclassified // For Training &amp; Simulation Use Only</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"><span>JSC</span></div>
+      <div class="brand-text">
+        <h1>JSC UNIT</h1>
+        <div class="sub">Special Operations Command</div>
+      </div>
+    </div>
+    <div class="auth-area" id="authArea"></div>
+  </div>
+  <nav class="mainnav">
+    <div class="nav-inner">
+      <a id="nav-homePage" onclick="showPage('homePage')" class="active" data-i18n="nav_home">Home</a>
+      <a id="nav-aboutPage" onclick="showPage('aboutPage')" data-i18n="nav_about">About</a>
+      <a id="nav-missionPage" onclick="showPage('missionPage')" data-i18n="nav_mission">Mission</a>
+      <a id="nav-operationsPage" onclick="showPage('operationsPage')" data-i18n="nav_operations">Operations</a>
+      <a id="nav-boardPage" onclick="showPage('boardPage')" data-i18n="nav_board">Board</a>
+      <a id="nav-contactPage" onclick="showPage('contactPage')" data-i18n="nav_contact">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== HOME ===== -->
+  <div class="page active" id="homePage">
+    <div class="hero">
+      <span class="mono-tag" data-i18n="home_tag">// Precision · Silence · Unity</span>
+      <h2 data-i18n-html="home_title">Built for the moment<br>no one else <em>answers the call.</em></h2>
+      <p class="lead" data-i18n="home_lead">JSC Unit is a specialist team focused on high-risk rescue and counter-terror operations. We combine tactics, technology, and decisive action to save lives and neutralize threats.</p>
+      <div class="hero-actions">
+        <a onclick="showPage('missionPage')" class="btn solid" data-i18n="home_btn_mission">View Mission Profiles</a>
+        <a onclick="showPage('aboutPage')" class="btn" data-i18n="home_btn_about">Meet the Unit</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="home_cap_head">Core Capabilities</h3>
+        <span class="mono-tag">01 — 03</span>
+      </div>
+      <div class="grid cols-3">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="cap1_idx">Capability / 01</span>
+          <h4 data-i18n="cap1_title">Search &amp; Rescue</h4>
+          <p data-i18n="cap1_body">Rapid response teams deploy to locate and extract civilians from disaster zones, hostile environments, or collapsed structures.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="cap2_idx">Capability / 02</span>
+          <h4 data-i18n="cap2_title">Counter-Terrorism</h4>
+          <p data-i18n="cap2_body">Precision raids and containment strategies to neutralize active threats while minimizing collateral impact.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="cap3_idx">Capability / 03</span>
+          <h4 data-i18n="cap3_title">Hostage Rescue</h4>
+          <p data-i18n="cap3_body">High-stakes breaching and close-quarters tactics focused on securing hostages and safe extraction.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="home_roster_head">Unit Roster — Preview</h3>
+        <a onclick="showPage('aboutPage')" class="mono-tag" data-i18n="home_roster_link">Full Roster →</a>
+      </div>
+      <div class="grid cols-3">
+        <div class="roster-card" onclick="showPage('detailJinoo')">
+          <div class="roster-top">
+            <div class="roster-avatar">JN</div>
+            <div class="roster-tag" data-i18n="tag_lead">Lead</div>
+          </div>
+          <h4>JINOO</h4>
+          <div class="roster-role" data-i18n="role_leader">Team Leader</div>
+          <p data-i18n="home_bio_jinoo">Leads strategic planning and command decisions. Known for calm leadership in high-pressure scenarios.</p>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+        <div class="roster-card" onclick="showPage('detailChris')">
+          <div class="roster-top">
+            <div class="roster-avatar">CH</div>
+            <div class="roster-tag" data-i18n="tag_ops">Ops</div>
+          </div>
+          <h4>CHRIS</h4>
+          <div class="roster-role" data-i18n="role_ops">Operations Chief</div>
+          <p data-i18n="home_bio_chris">Coordinates mission logistics and tactical sequencing. Real-time adjustments and comms lead.</p>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+        <div class="roster-card" onclick="showPage('detailSion')">
+          <div class="roster-top">
+            <div class="roster-avatar">SI</div>
+            <div class="roster-tag" data-i18n="tag_assault">Assault</div>
+          </div>
+          <h4>SION</h4>
+          <div class="roster-role" data-i18n="role_assault">Assault Lead</div>
+          <p data-i18n="home_bio_sion">Leads entry teams and breaching operations. Expert in close-quarters dynamic entry.</p>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <div class="page" id="aboutPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="about_tag">// Unit Profile</span>
+      <h2 data-i18n-html="about_title">About the <em>Unit.</em></h2>
+      <p class="lead" data-i18n="home_lead">JSC Unit is a specialist team focused on high-risk rescue and counter-terror operations. We combine tactics, technology, and decisive action to save lives and neutralize threats.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h3 data-i18n="about_roles_head">Primary Roles</h3></div>
+      <div class="grid cols-2">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="roleA_idx">Role Set / A</span>
+          <h4 data-i18n="roleA_title">Rescue &amp; Extraction</h4>
+          <p data-i18n="roleA_body">The unit specializes in search and rescue, trained for rapid insertion, precision breaching, and coordinated extraction under duress.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="roleB_idx">Role Set / B</span>
+          <h4 data-i18n="roleB_title">Counter-Terror &amp; Hostage Recovery</h4>
+          <p data-i18n="roleB_body">Operators train continuously for counter-terrorism and hostage rescue missions, prioritizing speed, precision, and civilian safety.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="about_weap_head">Standard Issue Weapons</h3>
+        <span class="mono-tag" data-i18n="about_weap_tag">Reference Only</span>
+      </div>
+      <p class="contact-note" style="margin-bottom:18px;" data-i18n="photo_hint">Drop your own weapon photos into an "images" folder next to this file, using the filenames below — they will appear automatically.</p>
+      <div class="grid cols-3">
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/ak47.jpg" alt="AK-47" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/ak47.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="weap1_idx">Standard / 01</span>
+          <h4>AK-47</h4>
+          <p data-i18n="weap1_body">Reliable, rugged battle rifle used by lead operators for robust performance across diverse environments.</p>
+        </div>
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/urgi.jpg" alt="URG-I" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/urgi.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="weap2_idx">Standard / 02</span>
+          <h4>URG-I</h4>
+          <p data-i18n="weap2_body">Compact carbine favored for close-quarters engagement and rapid maneuvering inside confined structures.</p>
+        </div>
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/m4a1.jpg" alt="M4A1 SOPMOD II" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/m4a1.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="weap3_idx">Standard / 03</span>
+          <h4>M4A1 SOPMOD II</h4>
+          <p data-i18n="weap3_body">Modular rifle platform with SOPMOD upgrades, optimized for modern special operations profiles.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="about_team_head">Team Members</h3>
+        <span class="mono-tag" data-i18n="about_team_tag">3 Operators Listed</span>
+      </div>
+      <div class="grid cols-3">
+        <div class="roster-card" onclick="showPage('detailJinoo')">
+          <div class="roster-top">
+            <div class="roster-avatar">JN</div>
+            <div class="roster-tag" data-i18n="tag_lead">Lead</div>
+          </div>
+          <h4>JINOO</h4>
+          <div class="roster-role" data-i18n="role_leader">Team Leader</div>
+          <p data-i18n="about_bio_jinoo">Leads strategic planning and command decisions. Oversees mission planning, risk assessment, and end-state accountability. Known for calm leadership in high-pressure rescue and assault scenarios.</p>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>AK-47</span></div>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+        <div class="roster-card" onclick="showPage('detailChris')">
+          <div class="roster-top">
+            <div class="roster-avatar">CH</div>
+            <div class="roster-tag" data-i18n="tag_ops">Ops</div>
+          </div>
+          <h4>CHRIS</h4>
+          <div class="roster-role" data-i18n="role_ops">Operations Chief</div>
+          <p data-i18n="about_bio_chris">Coordinates mission logistics and tactical sequencing. Responsible for intel integration and real-time adjustments. Rapid problem solver and communications lead during execution.</p>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>URG-I</span></div>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+        <div class="roster-card" onclick="showPage('detailSion')">
+          <div class="roster-top">
+            <div class="roster-avatar">SI</div>
+            <div class="roster-tag" data-i18n="tag_assault">Assault</div>
+          </div>
+          <h4>SION</h4>
+          <div class="roster-role" data-i18n="role_assault">Assault Lead</div>
+          <p data-i18n="about_bio_sion">Leads entry teams and breaching operations. Expert in close-quarters tactics and dynamic entry. Prioritizes speed, precision, and safe extraction of hostages.</p>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>M4A1 SOPMOD II</span></div>
+          <div class="roster-more" data-i18n="view_profile">View full profile →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MEMBER DETAIL: JINOO ===== -->
+  <div class="page" id="detailJinoo">
+    <div class="hero compact">
+      <a onclick="showPage('aboutPage')" class="mono-tag" data-i18n="detail_back">← Back to roster</a>
+      <h2 style="margin-top:16px;">JINOO</h2>
+      <p class="lead" data-i18n="role_leader">Team Leader</p>
+    </div>
+    <div class="section">
+      <div class="grid cols-2">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_profile">Profile</span>
+          <p data-i18n="about_bio_jinoo">Leads strategic planning and command decisions. Oversees mission planning, risk assessment, and end-state accountability. Known for calm leadership in high-pressure rescue and assault scenarios.</p>
+          <ul class="spec-list">
+            <li data-i18n="spec_jinoo_1">Strategic planning</li>
+            <li data-i18n="spec_jinoo_2">Command &amp; control</li>
+            <li data-i18n="spec_jinoo_3">Crisis negotiation</li>
+          </ul>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_loadout">Loadout</span>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>AK-47</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MEMBER DETAIL: CHRIS ===== -->
+  <div class="page" id="detailChris">
+    <div class="hero compact">
+      <a onclick="showPage('aboutPage')" class="mono-tag" data-i18n="detail_back">← Back to roster</a>
+      <h2 style="margin-top:16px;">CHRIS</h2>
+      <p class="lead" data-i18n="role_ops">Operations Chief</p>
+    </div>
+    <div class="section">
+      <div class="grid cols-2">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_profile">Profile</span>
+          <p data-i18n="about_bio_chris">Coordinates mission logistics and tactical sequencing. Responsible for intel integration and real-time adjustments. Rapid problem solver and communications lead during execution.</p>
+          <ul class="spec-list">
+            <li data-i18n="spec_chris_1">Logistics coordination</li>
+            <li data-i18n="spec_chris_2">Signals intelligence</li>
+            <li data-i18n="spec_chris_3">Real-time ops support</li>
+          </ul>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_loadout">Loadout</span>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>URG-I</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MEMBER DETAIL: SION ===== -->
+  <div class="page" id="detailSion">
+    <div class="hero compact">
+      <a onclick="showPage('aboutPage')" class="mono-tag" data-i18n="detail_back">← Back to roster</a>
+      <h2 style="margin-top:16px;">SION</h2>
+      <p class="lead" data-i18n="role_assault">Assault Lead</p>
+    </div>
+    <div class="section">
+      <div class="grid cols-2">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_profile">Profile</span>
+          <p data-i18n="about_bio_sion">Leads entry teams and breaching operations. Expert in close-quarters tactics and dynamic entry. Prioritizes speed, precision, and safe extraction of hostages.</p>
+          <ul class="spec-list">
+            <li data-i18n="spec_sion_1">Close-quarters combat</li>
+            <li data-i18n="spec_sion_2">Dynamic entry</li>
+            <li data-i18n="spec_sion_3">Hostage extraction</li>
+          </ul>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="detail_loadout">Loadout</span>
+          <div class="roster-weap"><span data-i18n="primary_weapon">Primary Weapon</span><span>M4A1 SOPMOD II</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MISSION ===== -->
+  <div class="page" id="missionPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="mission_tag">// Mission Overview</span>
+      <h2 data-i18n-html="mission_title">Preserving life,<br><em>restoring security.</em></h2>
+      <p class="lead" data-i18n="mission_lead">Our missions focus on preserving life and restoring security across high-risk situations. Below are the primary mission profiles JSC Unit undertakes.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="mission_profiles_head">Mission Profiles</h3>
+        <span class="mono-tag">01 — 03</span>
+      </div>
+      <div class="grid cols-3">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="profile1_idx">Profile / 01</span>
+          <h4 data-i18n="cap1_title">Search &amp; Rescue</h4>
+          <p data-i18n="profile1_body">Rapid response teams deploy to locate and extract civilians in disaster zones, hostile environments, or collapsed structures. Emphasis on medical stabilization, quick extraction, and secure evacuation routes.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="profile2_idx">Profile / 02</span>
+          <h4 data-i18n="cap2_title">Counter-Terrorism</h4>
+          <p data-i18n="profile2_body">Precision raids and containment strategies to neutralize active threats. The team coordinates intelligence and surveillance with surgical intervention to minimize collateral damage.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="profile3_idx">Profile / 03</span>
+          <h4 data-i18n="cap3_title">Hostage Rescue</h4>
+          <p data-i18n="profile3_body">High-stakes breaching and close-quarters tactics focused on securing hostages, safe extraction, and suspect containment. Dynamic entry planning and real-time negotiation support are core capabilities.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h3 data-i18n="roe_head">Rules of Engagement</h3></div>
+      <ul class="roe-list">
+        <li>
+          <div class="roe-num">01</div>
+          <p><strong data-i18n="roe1_title">Legal oversight.</strong> <span data-i18n="roe1_body">Use of force is governed by mission directives and legal oversight at every stage of an operation.</span></p>
+        </li>
+        <li>
+          <div class="roe-num">02</div>
+          <p><strong data-i18n="roe2_title">De-escalation first.</strong> <span data-i18n="roe2_body">All missions prioritize non-lethal options and de-escalation whenever feasible.</span></p>
+        </li>
+        <li>
+          <div class="roe-num">03</div>
+          <p><strong data-i18n="roe3_title">Decisive when necessary.</strong> <span data-i18n="roe3_body">Decisive force is authorized to protect innocent lives when de-escalation is not viable.</span></p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== OPERATIONS ===== -->
+  <div class="page" id="operationsPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="ops_tag">// Operations &amp; Capabilities</span>
+      <h2 data-i18n-html="ops_title">Modular by design,<br><em>unified in execution.</em></h2>
+      <p class="lead" data-i18n="ops_lead">Teams are structured into modular squads that can combine for larger operations or split for simultaneous objectives — allowing concurrent search, rescue, and containment tasks.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><h3 data-i18n="tech_head">Technical Capabilities</h3></div>
+      <div class="grid cols-2">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="capgen">Capability</span>
+          <h4 data-i18n="tc1_title">Advanced Breaching</h4>
+          <p data-i18n="tc1_body">Mechanical, ballistic, and explosive breaching methods matched to structure type and threat level.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="capgen">Capability</span>
+          <h4 data-i18n="tc2_title">Night Vision Coordination</h4>
+          <p data-i18n="tc2_body">Synchronized low-light operations with thermal and night-vision integration across the squad.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="capgen">Capability</span>
+          <h4 data-i18n="tc3_title">Encrypted Comms</h4>
+          <p data-i18n="tc3_body">Secure, redundant communication channels maintained throughout every phase of an operation.</p>
+        </div>
+        <div class="hud-panel">
+          <span class="idx" data-i18n="capgen">Capability</span>
+          <h4 data-i18n="tc4_title">Fast-Rope Insertion</h4>
+          <p data-i18n="tc4_body">Rapid airborne insertion for time-critical access to otherwise unreachable objectives.</p>
+        </div>
+      </div>
+      <p style="color:var(--text-muted); margin-top:18px; font-size:14.5px;" data-i18n="ops_note">All operators are cross-trained in medical trauma care and close-quarters tactics.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3 data-i18n="equip_head">Standard Equipment</h3>
+        <span class="mono-tag" data-i18n="equip_tag">Assigned by Operator</span>
+      </div>
+      <p class="contact-note" style="margin-bottom:18px;" data-i18n="photo_hint">Drop your own weapon photos into an "images" folder next to this file, using the filenames below — they will appear automatically.</p>
+      <div class="grid cols-3">
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/ak47.jpg" alt="AK-47" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/ak47.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="op_jinoo">Operator / JINOO</span>
+          <h4>AK-47</h4>
+        </div>
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/urgi.jpg" alt="URG-I" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/urgi.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="op_chris">Operator / CHRIS</span>
+          <h4>URG-I</h4>
+        </div>
+        <div class="hud-panel">
+          <div class="photo-slot">
+            <img src="images/m4a1.jpg" alt="M4A1 SOPMOD II" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-fallback"><span data-i18n="photo_placeholder">Add a photo here</span><br><code>images/m4a1.jpg</code></div>
+          </div>
+          <span class="idx" data-i18n="op_sion">Operator / SION</span>
+          <h4>M4A1 SOPMOD II</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BOARD ===== -->
+  <div class="page" id="boardPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="board_tag">// Internal Comms</span>
+      <h2 data-i18n="board_title">Unit Board</h2>
+      <p class="lead" data-i18n="board_lead">Post updates, sitreps, and notices for the unit.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid cols-2" style="align-items:start;">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="board_new">New Post</span>
+          <form onsubmit="return submitPost(event)">
+            <div class="contact-field">
+              <label data-i18n="label_author">Name / Callsign</label>
+              <input type="text" id="postAuthor" required>
+            </div>
+            <div class="contact-field">
+              <label data-i18n="label_boardtitle">Title</label>
+              <input type="text" id="postTitle" required>
+            </div>
+            <div class="contact-field">
+              <label data-i18n="label_boardbody">Message</label>
+              <textarea id="postBody" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn solid" data-i18n="btn_post">Post</button>
+          </form>
+        </div>
+        <div>
+          <div id="boardList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTACT ===== -->
+  <div class="page" id="contactPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="contact_tag">// Contact Command</span>
+      <h2 data-i18n-html="contact_title">Reach the <em>command channel.</em></h2>
+      <p class="lead" data-i18n="contact_lead">All operational communication is handled through secure channels. Authorized agencies may request access via official liaison offices.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid cols-2" style="align-items:start;">
+        <div class="hud-panel">
+          <span class="idx" data-i18n="media_idx">Press &amp; Public Inquiries</span>
+          <h4 data-i18n="media_title">Media Contact</h4>
+          <p data-i18n="media_body">For public press inquiries, please submit a formal request to the address below.</p>
+          <p style="margin-top:14px; color:var(--accent); font-family:'Barlow Condensed', sans-serif; letter-spacing:0.06em;">public@jscunit.example</p>
+          <p class="contact-note" data-i18n="media_note">This is a placeholder address for demo purposes only.</p>
+        </div>
+
+        <div class="hud-panel">
+          <span class="idx" data-i18n="form_idx">Secure Message Form</span>
+          <h4 data-i18n="form_title">Submit a Request</h4>
+          <form onsubmit="return handleSubmit(event)">
+            <div class="contact-field">
+              <label data-i18n="label_name">Name / Callsign</label>
+              <input type="text" id="cname" required>
+            </div>
+            <div class="contact-field">
+              <label data-i18n="label_email">Contact Email</label>
+              <input type="email" id="cemail" required>
+            </div>
+            <div class="contact-field">
+              <label data-i18n="label_msg">Message</label>
+              <textarea id="cmsg" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn solid" data-i18n="btn_transmit">Transmit Message</button>
+          </form>
+          <div id="formStatus" class="contact-note"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOGIN ===== -->
+  <div class="page" id="loginPage">
+    <div class="hero compact">
+      <span class="mono-tag" data-i18n="login_tag">// Access Control</span>
+      <h2 data-i18n="login_title">Secure Login</h2>
+      <p class="lead" data-i18n="login_lead">Command channel access requires authorization.</p>
+    </div>
+    <div class="section narrow">
+      <div class="hud-panel">
+        <form onsubmit="return doLogin(event)">
+          <div class="contact-field">
+            <label data-i18n="label_id">ID</label>
+            <input type="text" id="loginId" required>
+          </div>
+          <div class="contact-field">
+            <label data-i18n="label_pw">Password</label>
+            <input type="password" id="loginPw" required>
+          </div>
+          <button type="submit" class="btn solid" data-i18n="btn_login">Login</button>
+        </form>
+        <div id="loginStatus" class="contact-note"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="mono-tag" data-i18n="footer_copyright">© 2026 JSC Unit · All Rights Reserved</span>
+    <span class="mono-tag" data-i18n="footer_status">Secure Channel Status: Online</span>
+  </div>
+</footer>
+
+<script>
+/* ================= i18n ================= */
+var I18N = {
+  en: {
+    nav_home:"Home", nav_about:"About", nav_mission:"Mission", nav_operations:"Operations",
+    nav_board:"Board", nav_contact:"Contact",
+    home_tag:"// Precision · Silence · Unity",
+    home_lead:"JSC Unit is a specialist team focused on high-risk rescue and counter-terror operations. We combine tactics, technology, and decisive action to save lives and neutralize threats.",
+    home_btn_mission:"View Mission Profiles", home_btn_about:"Meet the Unit",
+    home_cap_head:"Core Capabilities",
+    cap1_idx:"Capability / 01", cap1_title:"Search &amp; Rescue", cap1_body:"Rapid response teams deploy to locate and extract civilians from disaster zones, hostile environments, or collapsed structures.",
+    cap2_idx:"Capability / 02", cap2_title:"Counter-Terrorism", cap2_body:"Precision raids and containment strategies to neutralize active threats while minimizing collateral impact.",
+    cap3_idx:"Capability / 03", cap3_title:"Hostage Rescue", cap3_body:"High-stakes breaching and close-quarters tactics focused on securing hostages and safe extraction.",
+    home_roster_head:"Unit Roster — Preview", home_roster_link:"Full Roster →",
+    tag_lead:"Lead", tag_ops:"Ops", tag_assault:"Assault",
+    role_leader:"Team Leader", role_ops:"Operations Chief", role_assault:"Assault Lead",
+    home_bio_jinoo:"Leads strategic planning and command decisions. Known for calm leadership in high-pressure scenarios.",
+    home_bio_chris:"Coordinates mission logistics and tactical sequencing. Real-time adjustments and comms lead.",
+    home_bio_sion:"Leads entry teams and breaching operations. Expert in close-quarters dynamic entry.",
+    view_profile:"View full profile →",
+    about_tag:"// Unit Profile",
+    about_roles_head:"Primary Roles",
+    roleA_idx:"Role Set / A", roleA_title:"Rescue &amp; Extraction", roleA_body:"The unit specializes in search and rescue, trained for rapid insertion, precision breaching, and coordinated extraction under duress.",
+    roleB_idx:"Role Set / B", roleB_title:"Counter-Terror &amp; Hostage Recovery", roleB_body:"Operators train continuously for counter-terrorism and hostage rescue missions, prioritizing speed, precision, and civilian safety.",
+    about_weap_head:"Standard Issue Weapons", about_weap_tag:"Reference Only",
+    photo_hint:'Drop your own weapon photos into an "images" folder next to this file, using the filenames below — they will appear automatically.',
+    photo_placeholder:"Add a photo here",
+    weap1_idx:"Standard / 01", weap1_body:"Reliable, rugged battle rifle used by lead operators for robust performance across diverse environments.",
+    weap2_idx:"Standard / 02", weap2_body:"Compact carbine favored for close-quarters engagement and rapid maneuvering inside confined structures.",
+    weap3_idx:"Standard / 03", weap3_body:"Modular rifle platform with SOPMOD upgrades, optimized for modern special operations profiles.",
+    about_team_head:"Team Members", about_team_tag:"3 Operators Listed",
+    about_bio_jinoo:"Leads strategic planning and command decisions. Oversees mission planning, risk assessment, and end-state accountability. Known for calm leadership in high-pressure rescue and assault scenarios.",
+    about_bio_chris:"Coordinates mission logistics and tactical sequencing. Responsible for intel integration and real-time adjustments. Rapid problem solver and communications lead during execution.",
+    about_bio_sion:"Leads entry teams and breaching operations. Expert in close-quarters tactics and dynamic entry. Prioritizes speed, precision, and safe extraction of hostages.",
+    primary_weapon:"Primary Weapon",
+    detail_back:"← Back to roster", detail_profile:"Profile", detail_loadout:"Loadout",
+    spec_jinoo_1:"Strategic planning", spec_jinoo_2:"Command &amp; control", spec_jinoo_3:"Crisis negotiation",
+    spec_chris_1:"Logistics coordination", spec_chris_2:"Signals intelligence", spec_chris_3:"Real-time ops support",
+    spec_sion_1:"Close-quarters combat", spec_sion_2:"Dynamic entry", spec_sion_3:"Hostage extraction",
+    mission_tag:"// Mission Overview",
+    mission_lead:"Our missions focus on preserving life and restoring security across high-risk situations. Below are the primary mission profiles JSC Unit undertakes.",
+    mission_profiles_head:"Mission Profiles",
+    profile1_idx:"Profile / 01", profile1_body:"Rapid response teams deploy to locate and extract civilians in disaster zones, hostile environments, or collapsed structures. Emphasis on medical stabilization, quick extraction, and secure evacuation routes.",
+    profile2_idx:"Profile / 02", profile2_body:"Precision raids and containment strategies to neutralize active threats. The team coordinates intelligence and surveillance with surgical intervention to minimize collateral damage.",
+    profile3_idx:"Profile / 03", profile3_body:"High-stakes breaching and close-quarters tactics focused on securing hostages, safe extraction, and suspect containment. Dynamic entry planning and real-time negotiation support are core capabilities.",
+    roe_head:"Rules of Engagement",
+    roe1_title:"Legal oversight.", roe1_body:"Use of force is governed by mission directives and legal oversight at every stage of an operation.",
+    roe2_title:"De-escalation first.", roe2_body:"All missions prioritize non-lethal options and de-escalation whenever feasible.",
+    roe3_title:"Decisive when necessary.", roe3_body:"Decisive force is authorized to protect innocent lives when de-escalation is not viable.",
+    ops_tag:"// Operations &amp; Capabilities",
+    ops_lead:"Teams are structured into modular squads that can combine for larger operations or split for simultaneous objectives — allowing concurrent search, rescue, and containment tasks.",
+    tech_head:"Technical Capabilities", capgen:"Capability",
+    tc1_title:"Advanced Breaching", tc1_body:"Mechanical, ballistic, and explosive breaching methods matched to structure type and threat level.",
+    tc2_title:"Night Vision Coordination", tc2_body:"Synchronized low-light operations with thermal and night-vision integration across the squad.",
+    tc3_title:"Encrypted Comms", tc3_body:"Secure, redundant communication channels maintained throughout every phase of an operation.",
+    tc4_title:"Fast-Rope Insertion", tc4_body:"Rapid airborne insertion for time-critical access to otherwise unreachable objectives.",
+    ops_note:"All operators are cross-trained in medical trauma care and close-quarters tactics.",
+    equip_head:"Standard Equipment", equip_tag:"Assigned by Operator",
+    op_jinoo:"Operator / JINOO", op_chris:"Operator / CHRIS", op_sion:"Operator / SION",
+    board_tag:"// Internal Comms", board_title:"Unit Board", board_lead:"Post updates, sitreps, and notices for the unit.",
+    board_new:"New Post", label_author:"Name / Callsign", label_boardtitle:"Title", label_boardbody:"Message",
+    btn_post:"Post", board_empty:"No posts yet.", btn_delete:"Delete",
+    contact_tag:"// Contact Command",
+    contact_lead:"All operational communication is handled through secure channels. Authorized agencies may request access via official liaison offices.",
+    media_idx:"Press &amp; Public Inquiries", media_title:"Media Contact",
+    media_body:"For public press inquiries, please submit a formal request to the address below.",
+    media_note:"This is a placeholder address for demo purposes only.",
+    form_idx:"Secure Message Form", form_title:"Submit a Request",
+    label_name:"Name / Callsign", label_email:"Contact Email", label_msg:"Message",
+    btn_transmit:"Transmit Message",
+    form_status:"Message queued for transmission. (Demo only — no data is actually sent.)",
+    login_tag:"// Access Control", login_title:"Secure Login", login_lead:"Command channel access requires authorization.",
+    label_id:"ID", label_pw:"Password", btn_login:"Login",
+    login_error:"Invalid ID or password.", login_success:"Welcome, Commander.",
+    login_btn_nav:"Login", logout_btn_nav:"Logout",
+    footer_copyright:"© 2026 JSC Unit · All Rights Reserved", footer_status:"Secure Channel Status: Online",
+    home_title_l1:"Built for the moment", home_title_em:"answers the call.",
+    about_title_em:"Unit.",
+    mission_title_l1:"Preserving life,", mission_title_em:"restoring security.",
+    ops_title_l1:"Modular by design,", ops_title_em:"unified in execution.",
+    contact_title_em:"command channel."
+  },
+  ko: {
+    nav_home:"홈", nav_about:"소개", nav_mission:"미션", nav_operations:"작전",
+    nav_board:"게시판", nav_contact:"문의",
+    home_tag:"// 정밀 · 침묵 · 단결",
+    home_lead:"JSC 유닛은 고위험 구조 및 대테러 작전을 전담하는 특수부대입니다. 전술과 기술, 결단력 있는 행동으로 생명을 구하고 위협을 제거합니다.",
+    home_btn_mission:"임무 프로필 보기", home_btn_about:"대원 소개 보기",
+    home_cap_head:"핵심 역량",
+    cap1_idx:"역량 / 01", cap1_title:"수색 및 구조", cap1_body:"신속 대응팀이 재난 지역, 위험 환경, 붕괴 구조물에서 민간인을 수색하고 구조합니다.",
+    cap2_idx:"역량 / 02", cap2_title:"대테러 작전", cap2_body:"정밀 급습과 봉쇄 전략으로 부수 피해를 최소화하며 활성 위협을 제거합니다.",
+    cap3_idx:"역량 / 03", cap3_title:"인질 구출", cap3_body:"인질의 안전한 확보와 탈출에 초점을 맞춘 고강도 브리칭 및 근접 전투 전술입니다.",
+    home_roster_head:"대원 로스터 — 미리보기", home_roster_link:"전체 로스터 →",
+    tag_lead:"팀장", tag_ops:"작전", tag_assault:"돌격",
+    role_leader:"팀장", role_ops:"작전 참모", role_assault:"돌격조장",
+    home_bio_jinoo:"전략 기획과 지휘 결정을 담당합니다. 고압 상황에서도 침착한 리더십으로 알려져 있습니다.",
+    home_bio_chris:"임무 병참과 전술 순서를 조율합니다. 실시간 조정과 통신을 담당합니다.",
+    home_bio_sion:"진입팀과 브리칭 작전을 지휘합니다. 근접 전투 진입의 전문가입니다.",
+    view_profile:"프로필 상세보기 →",
+    about_tag:"// 부대 소개",
+    about_roles_head:"주요 임무 영역",
+    roleA_idx:"역할군 / A", roleA_title:"구조 및 탈출", roleA_body:"본 부대는 수색 및 구조를 전문으로 하며, 신속 투입과 정밀 브리칭, 위기 상황에서의 협조된 탈출 훈련을 받았습니다.",
+    roleB_idx:"역할군 / B", roleB_title:"대테러 및 인질 구출", roleB_body:"대원들은 대테러 및 인질 구출 임무를 위해 지속적으로 훈련하며, 속도와 정밀성, 민간인 안전을 최우선으로 합니다.",
+    about_weap_head:"표준 지급 화기", about_weap_tag:"참고용",
+    photo_hint:'이 파일 옆에 "images" 폴더를 만들고 아래 파일명으로 사진을 넣으면 자동으로 표시됩니다.',
+    photo_placeholder:"여기에 사진을 추가하세요",
+    weap1_idx:"표준 / 01", weap1_body:"다양한 환경에서 안정적인 성능을 발휘하는 신뢰성 높은 전투 소총으로, 팀장급 대원이 사용합니다.",
+    weap2_idx:"표준 / 02", weap2_body:"근접 교전과 좁은 구조물 내 신속한 기동에 적합한 소형 카빈입니다.",
+    weap3_idx:"표준 / 03", weap3_body:"SOPMOD 업그레이드가 적용된 모듈형 소총 플랫폼으로, 현대 특수작전에 최적화되어 있습니다.",
+    about_team_head:"대원 명단", about_team_tag:"대원 3명 등록됨",
+    about_bio_jinoo:"전략 기획과 지휘 결정을 담당합니다. 임무 계획, 위험 평가, 최종 결과에 대한 책임을 총괄합니다. 고압적인 구조 및 돌격 상황에서도 침착한 리더십으로 알려져 있습니다.",
+    about_bio_chris:"임무 병참과 전술 순서를 조율합니다. 정보 통합과 실시간 조정을 담당합니다. 작전 수행 중 신속한 문제 해결과 통신을 이끕니다.",
+    about_bio_sion:"진입팀과 브리칭 작전을 지휘합니다. 근접 전투와 다이나믹 엔트리의 전문가입니다. 속도와 정밀성, 인질의 안전한 구출을 최우선으로 합니다.",
+    primary_weapon:"주 무기",
+    detail_back:"← 로스터로 돌아가기", detail_profile:"프로필", detail_loadout:"장비",
+    spec_jinoo_1:"전략 기획", spec_jinoo_2:"지휘 통제", spec_jinoo_3:"위기 협상",
+    spec_chris_1:"병참 조율", spec_chris_2:"신호 정보", spec_chris_3:"실시간 작전 지원",
+    spec_sion_1:"근접 전투", spec_sion_2:"다이나믹 엔트리", spec_sion_3:"인질 구출",
+    mission_tag:"// 임무 개요",
+    mission_lead:"우리의 임무는 고위험 상황에서 생명을 지키고 안전을 회복하는 데 집중합니다. 아래는 JSC 유닛이 수행하는 주요 임무 프로필입니다.",
+    mission_profiles_head:"임무 프로필",
+    profile1_idx:"프로필 / 01", profile1_body:"신속 대응팀이 재난 지역, 위험 환경, 붕괴 구조물에서 민간인을 수색하고 구조합니다. 응급 처치, 신속한 구조, 안전한 대피 경로 확보에 중점을 둡니다.",
+    profile2_idx:"프로필 / 02", profile2_body:"정밀 급습과 봉쇄 전략으로 활성 위협을 제거합니다. 정보와 감시를 정밀한 개입과 결합해 부수 피해를 최소화합니다.",
+    profile3_idx:"프로필 / 03", profile3_body:"인질의 안전한 확보와 탈출, 용의자 봉쇄에 초점을 맞춘 고강도 브리칭 및 근접 전투 전술입니다. 신속 진입 계획과 실시간 협상 지원이 핵심 역량입니다.",
+    roe_head:"교전 수칙",
+    roe1_title:"법적 감독.", roe1_body:"무력 사용은 임무 지침과 모든 작전 단계에서의 법적 감독을 따릅니다.",
+    roe2_title:"긴장 완화 우선.", roe2_body:"모든 임무는 가능한 경우 비살상 수단과 긴장 완화를 우선시합니다.",
+    roe3_title:"필요 시 단호하게.", roe3_body:"긴장 완화가 불가능할 때는 무고한 생명을 보호하기 위해 단호한 무력 사용이 허가됩니다.",
+    ops_tag:"// 작전 및 역량",
+    ops_lead:"팀은 모듈형 분대로 구성되어 대규모 작전 시 통합되거나, 동시 목표 수행을 위해 분리될 수 있습니다 — 이를 통해 수색, 구조, 봉쇄 임무를 동시에 진행할 수 있습니다.",
+    tech_head:"기술 역량", capgen:"역량",
+    tc1_title:"고급 브리칭", tc1_body:"구조물 유형과 위협 수준에 맞춘 기계식, 탄도식, 폭발식 브리칭 기법을 사용합니다.",
+    tc2_title:"야간 투시 협동작전", tc2_body:"분대 전체에 열화상 및 야간 투시 장비를 통합해 저조도 작전을 동기화합니다.",
+    tc3_title:"암호화 통신", tc3_body:"작전의 모든 단계에서 안전하고 이중화된 통신 채널을 유지합니다.",
+    tc4_title:"패스트로프 투입", tc4_body:"접근이 어려운 목표 지점에 신속하게 공중 투입합니다.",
+    ops_note:"모든 대원은 응급 외상 처치와 근접 전투 전술에 대해 교차 훈련을 받았습니다.",
+    equip_head:"표준 장비", equip_tag:"대원별 지급",
+    op_jinoo:"대원 / JINOO", op_chris:"대원 / CHRIS", op_sion:"대원 / SION",
+    board_tag:"// 내부 통신망", board_title:"부대 게시판", board_lead:"부대를 위한 소식, 상황 보고, 공지를 게시하세요.",
+    board_new:"새 글 작성", label_author:"이름 / 콜사인", label_boardtitle:"제목", label_boardbody:"내용",
+    btn_post:"게시", board_empty:"아직 게시글이 없습니다.", btn_delete:"삭제",
+    contact_tag:"// 지휘부 연락",
+    contact_lead:"모든 작전 관련 통신은 보안 채널을 통해 처리됩니다. 승인된 기관은 공식 연락 창구를 통해 접근을 요청할 수 있습니다.",
+    media_idx:"언론 및 일반 문의", media_title:"언론 담당",
+    media_body:"일반 언론 문의는 아래 주소로 공식 요청서를 제출해 주세요.",
+    media_note:"이 주소는 데모용 예시 주소입니다.",
+    form_idx:"보안 메시지 양식", form_title:"요청서 제출",
+    label_name:"이름 / 콜사인", label_email:"연락 이메일", label_msg:"메시지",
+    btn_transmit:"메시지 전송",
+    form_status:"메시지가 전송 대기열에 등록되었습니다. (데모용이며 실제로 전송되지 않습니다.)",
+    login_tag:"// 접근 통제", login_title:"보안 로그인", login_lead:"지휘 채널 접근에는 인증이 필요합니다.",
+    label_id:"아이디", label_pw:"비밀번호", btn_login:"로그인",
+    login_error:"아이디 또는 비밀번호가 올바르지 않습니다.", login_success:"환영합니다, 지휘관님.",
+    login_btn_nav:"로그인", logout_btn_nav:"로그아웃",
+    footer_copyright:"© 2026 JSC Unit · 모든 권리 보유", footer_status:"보안 채널 상태: 온라인",
+    home_title_l1:"아무도 응답하지 않는 순간을 위해", home_title_em:"우리가 응답한다.",
+    about_title_em:"소개",
+    mission_title_l1:"생명을 지키고,", mission_title_em:"안전을 되찾다.",
+    ops_title_l1:"설계는 모듈식,", ops_title_em:"실행은 하나로.",
+    contact_title_em:"지휘 채널"
+  }
+};
+
+var currentLang = "en";
+var isAdmin = false;
+
+function applyLanguage(lang){
+  currentLang = lang;
+  var dict = I18N[lang];
+
+  document.querySelectorAll("[data-i18n]").forEach(function(el){
+    var key = el.getAttribute("data-i18n");
+    if(dict[key] !== undefined) el.innerHTML = dict[key];
+  });
+
+  // composite headline blocks (line break + em)
+  var homeTitle = document.querySelector('[data-i18n-html="home_title"]');
+  if(homeTitle) homeTitle.innerHTML = dict.home_title_l1 + '<br>' + (lang==="ko" ? '' : 'no one else ') + '<em>' + dict.home_title_em + '</em>';
+
+  var aboutTitle = document.querySelector('[data-i18n-html="about_title"]');
+  if(aboutTitle) aboutTitle.innerHTML = (lang==="ko" ? '' : 'About the ') + '<em>' + dict.about_title_em + (lang==="ko" ? '' : '.') + '</em>';
+
+  var missionTitle = document.querySelector('[data-i18n-html="mission_title"]');
+  if(missionTitle) missionTitle.innerHTML = dict.mission_title_l1 + '<br><em>' + dict.mission_title_em + '</em>';
+
+  var opsTitle = document.querySelector('[data-i18n-html="ops_title"]');
+  if(opsTitle) opsTitle.innerHTML = dict.ops_title_l1 + '<br><em>' + dict.ops_title_em + '</em>';
+
+  var contactTitle = document.querySelector('[data-i18n-html="contact_title"]');
+  if(contactTitle) contactTitle.innerHTML = (lang==="ko" ? '' : 'Reach the ') + '<em>' + dict.contact_title_em + '</em>' + (lang==="ko" ? '로 연락하기.' : '');
+
+  document.documentElement.lang = lang === "ko" ? "ko" : "en";
+  renderBoard();
+}
+
+/* ================= auth ================= */
+function renderAuthArea(){
+  var area = document.getElementById("authArea");
+  if(isAdmin){
+    area.innerHTML =
+      '<div class="auth-chip"><span class="dot"></span><span>지휘관 모드 · admin</span></div>' +
+      '<button class="auth-btn" onclick="logout()">' + I18N.ko.logout_btn_nav + '</button>';
+  } else {
+    area.innerHTML =
+      '<button class="auth-btn" onclick="showPage(\'loginPage\')" data-i18n="login_btn_nav">' + I18N[currentLang].login_btn_nav + '</button>';
+  }
+}
+
+function doLogin(e){
+  e.preventDefault();
+  var id = document.getElementById("loginId").value.trim();
+  var pw = document.getElementById("loginPw").value;
+  var status = document.getElementById("loginStatus");
+
+  if(id === "admin" && pw === "admin123"){
+    isAdmin = true;
+    status.style.color = "var(--accent)";
+    status.textContent = I18N.ko.login_success;
+    applyLanguage("ko");
+    renderAuthArea();
+    setTimeout(function(){ showPage("homePage"); }, 500);
+  } else {
+    status.style.color = "var(--danger)";
+    status.textContent = I18N[currentLang].login_error;
+  }
+  return false;
+}
+
+function logout(){
+  isAdmin = false;
+  applyLanguage("en");
+  renderAuthArea();
+  showPage("homePage");
+}
+
+/* ================= navigation ================= */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll(".nav-inner a").forEach(function(a){ a.classList.remove("active"); });
+  var navMap = { homePage:"nav-homePage", aboutPage:"nav-aboutPage", detailJinoo:"nav-aboutPage",
+                 detailChris:"nav-aboutPage", detailSion:"nav-aboutPage", missionPage:"nav-missionPage",
+                 operationsPage:"nav-operationsPage", boardPage:"nav-boardPage", contactPage:"nav-contactPage" };
+  if(navMap[id]) document.getElementById(navMap[id]).classList.add("active");
+
+  window.scrollTo(0,0);
+}
+
+/* ================= contact form ================= */
+function handleSubmit(e){
+  e.preventDefault();
+  document.getElementById("formStatus").textContent = I18N[currentLang].form_status;
+  e.target.reset();
+  return false;
+}
+
+/* ================= board (in-memory only, resets on reload) ================= */
+var boardPosts = [];
+
+function submitPost(e){
+  e.preventDefault();
+  var author = document.getElementById("postAuthor").value.trim();
+  var title = document.getElementById("postTitle").value.trim();
+  var body = document.getElementById("postBody").value.trim();
+  if(!author || !title || !body) return false;
+
+  boardPosts.unshift({ author:author, title:title, body:body, time:new Date().toLocaleString() });
+  e.target.reset();
+  renderBoard();
+  return false;
+}
+
+function deletePost(index){
+  boardPosts.splice(index,1);
+  renderBoard();
+}
+
+function renderBoard(){
+  var list = document.getElementById("boardList");
+  if(!list) return;
+
+  if(boardPosts.length === 0){
+    list.innerHTML = '<p class="contact-note">' + I18N[currentLang].board_empty + '</p>';
+    return;
+  }
+
+  list.innerHTML = boardPosts.map(function(post, i){
+    var delBtn = isAdmin ? '<button class="del-btn" onclick="deletePost(' + i + ')">' + I18N[currentLang].btn_delete + '</button>' : '';
+    return '<div class="board-post">' +
+      '<div class="board-post-top"><h4>' + escapeHtml(post.title) + '</h4><span class="board-post-meta">' + escapeHtml(post.author) + ' · ' + post.time + '</span></div>' +
+      '<p>' + escapeHtml(post.body) + '</p>' +
+      delBtn +
+      '</div>';
+  }).join('');
+}
+
+function escapeHtml(str){
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ================= init ================= */
+applyLanguage("en");
+renderAuthArea();
+renderBoard();
+showPage("homePage");
+</script>
+
+</body>
+</html>
